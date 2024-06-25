@@ -1,0 +1,10 @@
+# dlg-fb tests
+numpy
+matplotlib
+torch
+torchvision
+# metrics
+ipykernel
+pandas
+seaborn
+
