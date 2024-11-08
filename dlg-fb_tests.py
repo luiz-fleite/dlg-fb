@@ -83,13 +83,39 @@ def lfw_dataset(lfw_path, shape_img):
 
 def main():
     # Choose dataset here
-    dataset = "CIFAR100"
+    dataset = "MNIST"
     root_path = "."
 
-    # on linux evironment
-    data_path = os.path.join(root_path, "datasets/dlg-FB-tests")
-    save_path = os.path.join(root_path, f"results/DLG-FB_{dataset}")
+    # Tracking time
+    date_print_format = "[%Y/%m/%d %H:%M:%S]"
+    date_file_name_format = "[%Y-%m-%d_%H-%M-%S]"
+    INITIAL_TIME = datetime.datetime.now()
+    INITIAL_TIME_STR = INITIAL_TIME.strftime(date_file_name_format)
+
+    # on linux evironment 
+    # defining directory structure for datasets, outputs and metrics
+    data_path = os.path.join(root_path, "datasets/dlg-fb-tests")
+    save_path = os.path.join(root_path, f"tests-outputs/dlg-fb-outputs/dlg-fb-output-{INITIAL_TIME_STR}/visualizations-{dataset}-{INITIAL_TIME_STR}")
+    csv_save_path = os.path.join(root_path, f"tests-outputs/dlg-fb-outputs/dlg-fb-output-{INITIAL_TIME_STR}/metrics-csv")
     
+    # printing paths
+    print(dataset, 'root_path:', root_path)
+    print(dataset, 'data_path:', data_path)
+    print(dataset, 'save_path:', save_path)
+    print(dataset, 'csv_save_path:', csv_save_path)
+
+    # creating directory structure
+    if not os.path.exists('tests-outputs'):
+        os.mkdir('tests-outputs')
+    if not os.path.exists('tests-outputs/dlg-fb-outputs'):
+        os.mkdir('tests-outputs/dlg-fb-outputs')
+    if not os.path.exists(f"tests-outputs/dlg-fb-outputs/dlg-fb-output-{INITIAL_TIME_STR}"):
+        os.mkdir(f"tests-outputs/dlg-fb-outputs/dlg-fb-output-{INITIAL_TIME_STR}")
+    if not os.path.exists(f"tests-outputs/dlg-fb-outputs/dlg-fb-output-{INITIAL_TIME_STR}/visualizations-{dataset}-{INITIAL_TIME_STR}"):
+        os.mkdir(f"tests-outputs/dlg-fb-outputs/dlg-fb-output-{INITIAL_TIME_STR}/visualizations-{dataset}-{INITIAL_TIME_STR}")
+    if not os.path.exists(f"tests-outputs/dlg-fb-outputs/dlg-fb-output-{INITIAL_TIME_STR}/metrics-csv"):
+        os.mkdir(f"tests-outputs/dlg-fb-outputs/dlg-fb-output-{INITIAL_TIME_STR}/metrics-csv")
+
     lr = 1.0
 
     #CONVERGENCE_LOSS = 0.0000005 # trying to force more accuracy
@@ -101,22 +127,9 @@ def main():
     TOTAL_ITERATIONS = 200
     TOTAL_EXP = 20
 
-    # Tracking time
-    date_print_format = "[%Y/%m/%d %H:%M:%S]"
-    date_file_name_format = "[%Y-%m-%d_%H-%M-%S]"
-    INITIAL_TIME = datetime.datetime.now()
-    INITIAL_TIME_STR = INITIAL_TIME.strftime(date_file_name_format)
-
     # creating csv file
     # defining header
     header = ["img_idx", "method", "initializer", "exp", "iters", "gt_label", "dummy_label", "pred_label", "converged", "loss", "mse"]
-
-    # creating diretories
-    csv_save_path = os.path.join(root_path, f"metrics/tests_{dataset}")
-    if not os.path.exists("metrics"):
-        os.mkdir("metrics")
-    if not os.path.exists(csv_save_path):
-        os.mkdir(csv_save_path)
 
     # writing csv file header
     with open(f"{csv_save_path}/metrics_{dataset}_at_{INITIAL_TIME_STR}.csv", "a") as f:
@@ -136,16 +149,6 @@ def main():
 
     tt = transforms.Compose([transforms.ToTensor()])
     tp = transforms.Compose([transforms.ToPILImage()])
-
-    print(dataset, 'root_path:', root_path)
-    print(dataset, 'data_path:', data_path)
-    print(dataset, 'save_path:', save_path)
-
-    if not os.path.exists('results'):
-        os.mkdir('results')
-    if not os.path.exists(save_path):
-        os.mkdir(save_path)
-
 
 
     ''' load data '''
@@ -488,6 +491,11 @@ def main():
                     print("===============================\n\n")
 
                 print_metrics()
+
+                # freeing memory
+                metrics = {}
+                metrics = {method:{initializer:{"losses_history": [], "mses_history": [], "iterations_history": [], "convergences": 0, "failures": 0, "gt_label_history": [],"dummy_logit_history": [],  "pred_logit_history": []} for initializer in initializers} for method in methods}
+
 
 
 if __name__ == '__main__':
