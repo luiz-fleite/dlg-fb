@@ -1,0 +1,8 @@
+# ignore venv
+.fl-venv
+
+# ignore datasets
+datasets
+
+# ignore outputs 
+tests-outputs
