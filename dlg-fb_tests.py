@@ -311,7 +311,7 @@ def main():
                     label_pred = torch.argmin(torch.sum(original_dy_dx[-2], dim=-1), dim=-1).detach().reshape((1,)).requires_grad_(False)
 
                     # saving the label prediction
-                    metrics[method][initializer]["dummy_logit_history"].append(label_pred.clone().detach())
+                    metrics[method][initializer]["dummy_logit_history"] = label_pred.clone().detach()
 
                 # tracking metrics
                 history = []
@@ -393,10 +393,10 @@ def main():
 
                     # tracking dummy_label and pred_label
                     if method == "DLG":
-                        dummy_logit_history.append(dummy_label.detach().clone().cpu().data.numpy())
+                        dummy_logit_history = dummy_label.detach().clone().cpu().data.numpy()
 
 
-                    pred_logit_history.append(net(dummy_data[method][initializer]["new"]).cpu().data.numpy())
+                    pred_logit_history = net(dummy_data[method][initializer]["new"]).cpu().data.numpy()
 
 
                     if iters % int(TOTAL_ITERATIONS / 30) == 0 or iters in [0, 1]:
@@ -450,19 +450,19 @@ def main():
                         break
                 
                 # tracking metrics 
-                metrics[method][initializer]["losses_history"].append(losses)
-                metrics[method][initializer]["mses_history"].append(mses)
-                metrics[method][initializer]["iterations_history"].append(train_iters[-1])
-                metrics[method][initializer]["gt_label_history"].append(gt_label[0].detach().cpu().tolist())
-                metrics[method][initializer]["pred_logit_history"].append(pred_logit_history)
+                metrics[method][initializer]["losses_history"] = losses
+                metrics[method][initializer]["mses_history"] = mses
+                metrics[method][initializer]["iterations_history"] = train_iters[-1]
+                metrics[method][initializer]["gt_label_history"] = gt_label[0].detach().cpu().tolist()
+                metrics[method][initializer]["pred_logit_history"] = pred_logit_history
                 if method == "DLG":
-                    metrics[method][initializer]["dummy_logit_history"].append(dummy_logit_history)
+                    metrics[method][initializer]["dummy_logit_history"] = dummy_logit_history
 
                 # simplifying some metrics
                 if method == "DLG":
                     dummy_label_metric = torch.argmax(torch.from_numpy(np.array(metrics[method][initializer]["dummy_logit_history"][-1][-1]))).tolist()
                 elif method == "iDLG":
-                    dummy_label_metric = metrics[method][initializer]["dummy_logit_history"][-1].tolist()[0]
+                    dummy_label_metric = metrics[method][initializer]["dummy_logit_history"][-1].tolist()
                 pred_label_metric = torch.argmax(torch.from_numpy(np.array(metrics[method][initializer]["pred_logit_history"][-1][-1]))).tolist()
 
                 # Saving to csv file
@@ -479,9 +479,9 @@ def main():
                     print("============metrics============")
                     print("imidx_list: ", imidx_list[-1])
                     print("method: ", method, ', initializer:', initializer)
-                    print("loss: ", metrics[method][initializer]["losses_history"][-1][-1])
-                    print("mse: ", metrics[method][initializer]["mses_history"][-1][-1])
-                    print("gt_label: ", metrics[method][initializer]["gt_label_history"][-1])
+                    print("loss: ", metrics[method][initializer]["losses_history"][-1])
+                    print("mse: ", metrics[method][initializer]["mses_history"][-1])
+                    print("gt_label: ", metrics[method][initializer]["gt_label_history"])
                     print("dummy_label: ", dummy_label_metric)
                     print("pred_label: ", pred_label_metric)
                     print("Total convergence: ", metrics[method][initializer]["convergences"])
@@ -492,9 +492,6 @@ def main():
 
                 print_metrics()
 
-                # freeing memory
-                metrics = {}
-                metrics = {method:{initializer:{"losses_history": [], "mses_history": [], "iterations_history": [], "convergences": 0, "failures": 0, "gt_label_history": [],"dummy_logit_history": [],  "pred_logit_history": []} for initializer in initializers} for method in methods}
 
 
 
