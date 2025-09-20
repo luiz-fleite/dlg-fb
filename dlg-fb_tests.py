@@ -169,9 +169,9 @@ def main():
     defenses = ["None"] 
     # magnitude is sensitivity / epsilon 
     # standard sensitivity is 1 and the epsilons are: 10, 100, 1000, 10000 
-    #magnitudes = ["None", 0.1, 0.01, 0.001, 0.0001] 
+    magnitudes = ["None", 0.1, 0.01, 0.001, 0.0001] 
     #magnitudes = ["None", 0.0001]
-    magnitudes = ["None"]
+    #magnitudes = ["None"]
 
     # creating dummy data records for FB initializer
     dummy_data = {}
