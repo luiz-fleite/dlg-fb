@@ -1,5 +1,5 @@
 # ignore venv
-.fl-venv
+.dlg-env
 
 # ignore datasets
 datasets
